@@ -19,7 +19,6 @@ const copyFile = async (directoryPath, copyDirectoryPath) => {
 const main = async () => {
   let promisesArray = []
   try {
-
     for (file of await filesList("./directory")) {
       let filePath = "./directory" + '/' + file
       let filePathCopy = './fastCopyDirectory' + '/' + file
