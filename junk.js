@@ -1,32 +1,32 @@
-const axios = require('axios')
-
-const getHtmlSize = async (url) => {
-  try {
-    const response = await axios.get(url)
-    return response.headers['content-length']
-  } catch (e) {
-    throw e
-  }
+const asyncTask = (id, timeout, willFulFilled) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (willFulFilled === true) {
+        // ce console.log simule un side effect
+        console.log(`Log: task${id} done after ${timeout} seconds`)
+        // la valeur de retour est contenu dans le resolve
+        resolve(`result from task${id}`)
+      } else {
+        reject(new Error(`faillure from task${id}`))
+      }
+    }, timeout * 1000)
+  })
 }
 
 const main = async () => {
-  const url1 = 'https://en.wikipedia.org/kiki/water_on_mars' // BAD URL
-  const url2 = 'https://en.wikipedia.org/wiki/Old_Red_Cracker'
-
-  const p1 = getHtmlSize(url1)
-  const p2 = getHtmlSize(url2)
-
-  const [result1, result2] = await Promise.allSettled([p1, p2])
-
-  if (result1.status === 'fulfilled') {
-    console.log(`size of page ${url1}: ${result1.value / 1000}KB`)
-  } else {
-    console.error(`${url1}: ${result1.reason}`)
-  }
-  if (result2.status === 'fulfilled') {
-    console.log(`size of page ${url2}: ${result2.value / 1000}KB`)
-  } else {
-    console.error(`${url2}: ${result2.reason}`)
+  try {
+    const results = await Promise.all([
+      asyncTask(1, 2, true),
+      asyncTask(2, 0.5, true),
+      asyncTask(3, 1, true)
+    ])
+    for (const result of results) {
+      console.log(result)
+    }
+    const res4 = await asyncTask(4, 1, true)
+    console.log(res4)
+  } catch (e) {
+    console.error(e.message)
   }
 }
 
